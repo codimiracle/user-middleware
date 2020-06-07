@@ -1,0 +1,42 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.codimiracle.web.middleware.user.mapper.RoleMapper">
+    <resultMap id="PersistentResultMap" type="com.codimiracle.web.middleware.user.pojo.po.Role">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="deleted" property="deleted"/>
+        <result column="deleted_at" property="deletedAt"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <resultMap id="ValueResultMap" type="com.codimiracle.web.middleware.user.pojo.vo.RoleVO">
+        <id column="role_id" property="id"/>
+        <result column="role_name" property="name"/>
+        <result column="role_description" property="description" />
+        <result column="role_created_at" property="createdAt"/>
+        <result column="role_updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <sql id="select_statement">
+        SELECT
+        r.id role_id,
+        r.name role_name,
+        r.description role_description,
+        r.created_at role_created_at,
+        r.updated_at role_updated_at
+        FROM role r
+        WHERE r.deleted = 0
+    </sql>
+
+    <select id="selectByIdIntegrally" resultMap="ValueResultMap">
+        <include refid="select_statement"/>
+        AND r.id = #{id}
+    </select>
+
+    <select id="selectAllIntegrally" resultMap="ValueResultMap">
+        <include refid="select_statement"/>
+    </select>
+
+</mapper>

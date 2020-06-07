@@ -1,0 +1,91 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.codimiracle.web.middleware.user.mapper.UserMetadataMapper">
+    <resultMap id="PersistentResultMap" type="com.codimiracle.web.middleware.user.pojo.po.UserMetadata">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="password_salt" property="passwordSalt"/>
+        <result column="nickname" property="nickname"/>
+        <result column="avatar" property="avatar"/>
+        <result column="type" property="type"/>
+        <result column="expired_at" property="expiredAt"/>
+        <result column="credentials_expired_at" property="credentialsExpiredAt"/>
+        <result column="locked" property="locked"/>
+        <result column="deleted" property="deleted"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="deleted_at" property="deletedAt"/>
+    </resultMap>
+
+    <resultMap id="ValueResultMap" type="com.codimiracle.web.middleware.user.pojo.vo.UserMetadataVO">
+        <id column="user_metadata_id" property="id"/>
+        <result column="user_metadata_username" property="username"/>
+        <result column="user_metadata_password" property="password"/>
+        <result column="user_metadata_nickname" property="nickname"/>
+        <result column="user_metadata_avatar" property="avatar"/>
+        <result column="user_metadata_type" property="type"/>
+        <result column="user_metadata_expired_at" property="expiredAt"/>
+        <result column="user_metadata_credentials_expired_at" property="credentialsExpiredAt"/>
+        <result column="user_metadata_locked" property="locked"/>
+        <result column="user_metadata_created_at" property="createdAt"/>
+        <result column="user_metadata_updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <resultMap id="ProtectedResultMap" type="com.codimiracle.web.middleware.user.pojo.vo.SocialUserVO">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="nickname" property="nickname"/>
+        <result column="avatar" property="avatar"/>
+    </resultMap>
+
+    <sql id="select_statement">
+        SELECT
+            um.id user_metadata_id,
+            um.username user_metadata_username,
+            um.password user_metadata_password,
+            um.password_salt user_metadata_password_salt,
+            um.type user_metadata_type
+            um.nickname user_metadata_nickname
+            um.avatar user_metadata_avatar
+            um.expired user_metadata_expired
+            um.credentials_expired user_metadata_credentials_expired
+            um.locked user_metadata_locked
+            um.enabled user_metadata_enabled
+            um.role_id user_metadata_role_id
+        FROM user_metadata um
+        WHERE um.deleted = 0
+    </sql>
+
+    <select id="selectByUserIdProtectlly" resultMap="ProtectedResultMap">
+        SELECT
+            um.id,
+            um.username,
+            um.nickname,
+            um.avatar
+        FROM user_metadata um
+        WHERE um.deleted = 0
+    </select>
+
+    <select id="selectByIdIntegrally">
+        <include refid="select_statement"/>
+        AND s.id = #{id}
+    </select>
+
+    <select id="selectAllIntegrally">
+        <include refid="select_statement"/>
+        <if test="filter != null">
+            <if test="filter.username != null and filter.username.length gt 0">
+                AND um.username = concat('%', #{filter.username[0]}, '%'}
+            </if>
+            <if test="filter.nickname != null and filter.nickname.length gt 0">
+                AND um.nickname = concat('%', #{filter.nickname[0]}, '%'}
+            </if>
+            <if test="filter.roleId != null and filter.roleId.length gt 0">
+                AND um.roleId = #{filter.roleId[0]}
+            </if>
+        </if>
+    </select>
+
+</mapper>
